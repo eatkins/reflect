@@ -123,7 +123,8 @@ object Build {
       },
       libraryDependencies ++= Seq(
         scalaMacros % scalaVersion.value,
-        utest
+        utest,
+        zinc // AbortMacroException is not found without this dependency
       )
     )
 }
