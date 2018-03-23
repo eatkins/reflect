@@ -1,8 +1,8 @@
 package com.swoval.reflect
 
-import scala.reflect.macros.blackbox
 import scala.language.experimental.macros
 import scala.languageFeature.reflectiveCalls
+import scala.reflect.macros.blackbox
 import scala.reflect.macros.runtime.AbortMacroException
 
 /**

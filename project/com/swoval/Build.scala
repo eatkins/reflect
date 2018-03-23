@@ -1,16 +1,16 @@
 package com.swoval
 
 import java.io.File
-import java.nio.file.{Files, StandardCopyOption}
+import java.nio.file.{ Files, StandardCopyOption }
 import java.util.jar.JarFile
 
+import com.swoval.Dependencies._
 import sbt.Keys._
 import sbt._
 
 import scala.collection.JavaConverters._
 import scala.tools.nsc
 import scala.util.Properties
-import Dependencies._
 
 object Build {
   def commonSettings: SettingsDefinition = Seq(
@@ -66,7 +66,8 @@ object Build {
       }.value,
       packageOptions in (Compile, packageBin) +=
         Package.ManifestAttributes(
-          "Premain-Class" -> "com.swoval.reflect.Agent"),
+          "Premain-Class" -> "com.swoval.reflect.Agent"
+        ),
       BuildKeys.genTestResourceClasses := {
         val dir = Files.createTempDirectory("util-resources")
         try {
@@ -85,21 +86,26 @@ object Build {
             case f if f.getName == "Buzz.scala.template" => ("Buzz", IO.read(f))
           } foreach {
             case ("Bar", f) =>
-              Seq(6, 7) foreach {
-                i =>
-                  IO.write(dir.resolve("Bar.scala").toFile,
-                           f.replaceAll("\\$\\$impl", s"$i"))
-                  new g.Run().compile(List(dir.resolve("Bar.scala").toString))
-                  Files.copy(dir.resolve("com/swoval/reflect/Bar$.class"),
-                             resourceDir.resolve(s"Bar$$.class.$i"),
-                             StandardCopyOption.REPLACE_EXISTING)
+              Seq(6, 7) foreach { i =>
+                IO.write(
+                  dir.resolve("Bar.scala").toFile,
+                  f.replaceAll("\\$\\$impl", s"$i")
+                )
+                new g.Run().compile(List(dir.resolve("Bar.scala").toString))
+                Files.copy(
+                  dir.resolve("com/swoval/reflect/Bar$.class"),
+                  resourceDir.resolve(s"Bar$$.class.$i"),
+                  StandardCopyOption.REPLACE_EXISTING
+                )
               }
             case ("Buzz", f) =>
               IO.write(dir.resolve("Buzz.scala").toFile, f)
               new g.Run().compile(List(dir.resolve("Buzz.scala").toString))
-              Files.copy(dir.resolve("com/swoval/reflect/Buzz.class"),
-                         resourceDir.resolve(s"Buzz.class"),
-                         StandardCopyOption.REPLACE_EXISTING)
+              Files.copy(
+                dir.resolve("com/swoval/reflect/Buzz.class"),
+                resourceDir.resolve(s"Buzz.class"),
+                StandardCopyOption.REPLACE_EXISTING
+              )
             case (_, _) =>
           }
         } finally {
