@@ -13,6 +13,8 @@ import scala.tools.nsc
 import scala.util.Properties
 
 object Build {
+  val (scala211, scala212) = ("2.11.12", "2.12.7")
+  val scalaCrossVersions = Seq(scala211, scala212)
   def commonSettings: SettingsDefinition = Seq(
     resolvers += Resolver.sonatypeRepo("releases"),
     organization := "com.swoval",
@@ -28,6 +30,10 @@ object Build {
   lazy val reflect = project
     .settings(
       commonSettings,
+      (scalacOptions in Compile) ++= {
+        if (scalaVersion.value == scala211) Seq("-Xexperimental") else Nil
+      },
+      crossScalaVersions := scalaCrossVersions,
       testFrameworks += new TestFramework("utest.runner.Framework"),
       BuildKeys.java8rt := {
         if (Properties.isMac) {
