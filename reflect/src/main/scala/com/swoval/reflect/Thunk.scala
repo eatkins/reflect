@@ -82,31 +82,36 @@ private[reflect] object ThunkMacros {
       def apply(arg: c.Tree): Arg = {
         val tpe = arg.tpe
         val name = fresh(tpe.typeSymbol.name.encodedName.toString.toLowerCase)
-        lazy val classOfType = q"classOf[${qualified(tpe)}]"
-
-        tpe.erasure match {
-          case t if t <:< weakTypeOf[Boolean] => Arg(arg, name, classOfType, box(name, t))
-          case t if t <:< weakTypeOf[Byte]    => Arg(arg, name, classOfType, box(name, t))
-          case t if t <:< weakTypeOf[Char]    => Arg(arg, name, classOfType, box(name, t))
-          case t if t <:< weakTypeOf[Double]  => Arg(arg, name, classOfType, box(name, t))
-          case t if t <:< weakTypeOf[Float]   => Arg(arg, name, classOfType, box(name, t))
-          case t if t <:< weakTypeOf[Int]     => Arg(arg, name, classOfType, box(name, t))
-          case t if t <:< weakTypeOf[Long]    => Arg(arg, name, classOfType, box(name, t))
-          case t if t <:< weakTypeOf[Short]   => Arg(arg, name, classOfType, box(name, t))
-          case _                              => Arg(arg, name, q"$name.getClass", q"$name")
-        }
+        val classOfType = q"classOf[${qualified(tpe)}]"
+        Arg(arg, name, classOfType, box(name, tpe.erasure))
       }
     }
     case class Arg(tree: c.Tree, name: TermName, clazz: c.Tree, boxed: c.Tree)
     def moduleApply(obj: Tree, method: TermName, args: Args) = {
+      val name = method.toString
       val moduleName = s"${javaName(obj.tpe)}$$"
       val loaderName = fresh("loader")
       val parsedArgs = args.flatten.map(Arg(_))
-      val classes = parsedArgs.map(_.clazz)
+      val decls = obj.tpe.decls.collect { case m: MethodSymbol if m.name.toString == name => m }
+      val methodArgs = decls
+        .filter { m =>
+          val params = m.typeSignature.paramLists.flatten.map(_.typeSignature)
+          params.size == parsedArgs.size && params
+            .zip(parsedArgs.map(_.tree.tpe))
+            .foldLeft(true) {
+              case (res, (mType, aType)) => res && aType <:< mType
+            }
+        }
+        .map(_.typeSignature.paramLists.flatten.map(_.typeSignature))
+        .headOption
+        .getOrElse(c.abort(c.enclosingPosition, "Couldn't find method: '${obj}.${method}'"))
+      val classes = methodArgs.map(t => q"classOf[$t]")
       val module = fresh("module")
       val instanceName = fresh("instanceName")
       val methodName = fresh("methodName")
+      val classesName = fresh("classes")
       val tree = q"""
+        val $classesName = Seq(..$classes)
         val $loaderName = $loader
         val $module = $loaderName.loadClass($moduleName)
         ..${parsedArgs.map(a => q"val ${a.name} = ${a.tree}")}
