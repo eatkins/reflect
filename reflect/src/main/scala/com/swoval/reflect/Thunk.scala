@@ -24,8 +24,8 @@ import scala.reflect.macros.blackbox
  * will expand to something like
  * {{{
  *   val loader = Thread.currentThread.getContextClassLoader match {
- *     case l: ChildFirstClassLoader => l.copy()
- *     case l                        => new ChildFirstClassLoader(l)
+ *     case l: com.swoval.reflectChildFirstClassLoader => l.copy()
+ *     case l                                          => new com.swoval.reflect.ChildFirstClassLoader(l)
  *   }
  *   val module = loader.loadClass("foo.Bar")
  *   val instance = module.getDeclaredField("MODULE$").get(null)
@@ -69,8 +69,8 @@ private[reflect] object ThunkMacros {
         case q"" =>
           q"""
           Thread.currentThread.getContextClassLoader match {
-            case l: ChildFirstClassLoader => l.copy()
-            case l                        => new ChildFirstClassLoader(l)
+            case l: com.swoval.reflect.ChildFirstClassLoader => l.copy()
+            case l => new com.swoval.reflect.ChildFirstClassLoader(l)
           }
           """
         case l => l

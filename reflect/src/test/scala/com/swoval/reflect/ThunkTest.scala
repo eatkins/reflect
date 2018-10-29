@@ -67,6 +67,9 @@ object ThunkTest extends TestSuite {
             Thunk(Foo.add(x, y)) ==> x + y
           }
         }
+        'otherPackage - {
+          thunk.Foo.two ==> 2
+        }
       }
       'force - {
         'strict - {
@@ -150,7 +153,6 @@ object ThunkTest extends TestSuite {
             Thunk(Bar.buzz(new com.swoval.reflect.Buzz)) ==> 3
           }
         }
-
       }
     }
   }
