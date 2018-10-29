@@ -139,6 +139,7 @@ public class ChildFirstClassLoader extends URLClassLoader {
    *
    * @param name
    */
+  @SuppressWarnings("unused")
   public void appendToClassPathForInstrumentation(String name) {
     try {
       super.addURL(Paths.get(name).toUri().toURL());
