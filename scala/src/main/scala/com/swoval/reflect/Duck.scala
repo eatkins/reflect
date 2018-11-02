@@ -152,7 +152,7 @@ private[reflect] object DuckMacros {
           }
         }
         val cases = Seq(
-          cq"${pq"_root_.scala.Seq(m)"} => m",
+          cq"${pq"_root_.scala.collection.Seq(m)"} => m",
           if (!d.isAbstract)
             cq"${pq"_"} => (..$params) => super.${TermName(methodName)}(..$paramNames)"
           else {
