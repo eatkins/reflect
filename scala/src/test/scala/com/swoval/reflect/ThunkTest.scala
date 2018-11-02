@@ -51,6 +51,7 @@ object ThunkTest extends TestSuite {
     def x(l: Long): Int = 7
     def x(s: Short): Int = 8
   }
+
   val tests = Tests {
     'run - {
       'thunk - {
@@ -134,6 +135,7 @@ object ThunkTest extends TestSuite {
                 // There seems to be a bug in intercept that requires full qualification of Buzz
                 Thunk(Bar.buzz(new com.swoval.reflect.Buzz))
               }
+              ()
             }
           } else {
             println("Not running notBlocked test on embedded jvm.")
@@ -174,8 +176,7 @@ object ThunkTest extends TestSuite {
         .toIndexedSeq
         .sortBy(_.toString)
         .reverse
-        .foreach(Files.deleteIfExists(_))
+        .foreach(Files.deleteIfExists)
     }
   }
-
 }
