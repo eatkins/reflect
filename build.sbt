@@ -1,4 +1,5 @@
-import com.swoval.Build
+import com.swoval.reflect.Build
 
+val core = Build.core
 val reflect = Build.reflect
-val root = Build.root
+val scala = Build.scala

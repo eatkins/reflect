@@ -1,6 +1,6 @@
-package com.swoval
+package com.swoval.reflect
 
-import sbt._
+import sbt.{ settingKey, taskKey }
 
 object BuildKeys {
   val java8rt = settingKey[Option[String]]("Location of rt.jar for java 8")
