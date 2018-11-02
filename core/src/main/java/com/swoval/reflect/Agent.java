@@ -35,7 +35,12 @@ public class Agent {
     return instrumentation == null ? new Class[0] : instrumentation.getInitiatedClasses(loader);
   }
 
-  /** Set the global Instrumentation instance before the main method is called. */
+  /**
+   * Set the global Instrumentation instance before the main method is called.
+   *
+   * @param args the arguments
+   * @param inst the provided instrumentation
+   */
   public static void premain(final String args, final Instrumentation inst) {
     instrumentation = inst;
   }
