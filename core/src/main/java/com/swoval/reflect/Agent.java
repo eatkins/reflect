@@ -7,31 +7,38 @@ import java.lang.instrument.Instrumentation;
  * loader. The only method is getInitiatedClasses, which delegates to
  * Instrumentation#getInitiatedClasses. It will typically be used recursively, e.g.
  *
- * <p>{{{
- *  ClassLoader loader = Thread.currentThread().getContextClassLoader();
- *  List<Class<?>> result = new ArrayList<>();
- *  while (loader != null) {
- *    for (Class<?> clazz : com.swoval.reflect.Agent.getInitiatedClass(loader)) {
- *      result.add(clazz);
- *    }
- *    loader = loader.getParent();
- *  }
- *  }}}
+ * <pre>{@code
+ * ClassLoader loader = Thread.currentThread().getContextClassLoader();
+ * List<Class<?>> result = new ArrayList<>();
+ * while (loader != null) {
+ *   for (Class<?> clazz : com.swoval.reflect.Agent.getInitiatedClass(loader)) {
+ *     result.add(clazz);
+ *   }
+ *   loader = loader.getParent();
+ * }
+ *
+ * }</pre>
+ *
+ * The main use case is that for testing, it allows us to verify that a particular class was loaded
+ * by the correct ClassLoader.
  */
 public class Agent {
   private static Instrumentation instrumentation = null;
 
   /**
-   * Get an array of loaded classes. The user will typically want to use this recursively, e.g.
+   * Get an array of loaded classes.
    *
-   * @param loader
-   * @return the loaded classes
+   * @param loader the ClassLoader for which the method returns the loaded classes
+   * @return the loaded classes for the provided ClassLoader.
    */
-  public static Class[] getInitiatedClasses(ClassLoader loader) {
+  public static Class[] getInitiatedClasses(final ClassLoader loader) {
     return instrumentation == null ? new Class[0] : instrumentation.getInitiatedClasses(loader);
   }
 
-  public static void premain(String args, Instrumentation inst) {
+  /**
+  * Set the global Instrumentation instance before the main method is called.
+  */
+  public static void premain(final String args, final Instrumentation inst) {
     instrumentation = inst;
   }
 }
