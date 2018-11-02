@@ -145,9 +145,9 @@ object ThunkTest extends TestSuite {
              * By adding an additional predicate to force the parent to load the Buzz class,
              * we avoid the problem described above.
              */
-            Thread.currentThread.setContextClassLoader(l.copy(p =>
-              new Predicates(n => p.getForceParent.test(n) || n == "com.swoval.reflect.Buzz",
-                             p.getForceChild())))
+            Thread.currentThread.setContextClassLoader(l.copy(n =>
+              if (n == "com.swoval.reflect.Buzz") RequiredClassLoader.FORCE_PARENT
+              else RequiredClassLoader.UNSPECIFIED))
             val dir = Files.createDirectories(path.resolve("com/swoval/reflect"))
             Files.copy(resourcePath.resolve(s"Buzz.class"), dir.resolve("Buzz.class"))
             Thunk(Bar.buzz(new com.swoval.reflect.Buzz)) ==> 3
