@@ -25,6 +25,50 @@ object Plugins {
   }
   def copy(path: Path, target: Path): Unit =
     Files.copy(path, target, StandardCopyOption.REPLACE_EXISTING)
+  def genCoreTestResourceClasses: Def.Initialize[Task[Unit]] = Def.task {
+    val cp = classPath(Test).value
+
+    IO.withTemporaryDirectory { dir =>
+      val path = dir.toPath
+      val resourceDir = (resourceDirectory in Test).value.toPath
+      val classResourceDir: Int => Path =
+        i => resourceDir.resolve(s"classes/$i/com/swoval/reflect")
+      withCompiler(cp, path.toString) { g =>
+        val file = path.resolve("TestModule.scala").toFile
+        (1 to 2) foreach { i =>
+          IO.write(
+            file,
+            s"""
+             |package com.swoval.reflect
+             |
+             |object TestClasses {
+             |  class Foo
+             |  class Bar extends Foo
+             |}
+             |
+             |import TestClasses._
+             |
+             |object TestModule {
+             |  def bar(foo: Foo): Int = $i
+             |}
+           """.stripMargin
+          )
+          // If compile fails, it won't throw an exception.
+          new g.Run().compile(List(file.toString))
+          val outputDir = classResourceDir(i)
+          Files.createDirectories(outputDir)
+          Files
+            .walk(path)
+            .iterator
+            .asScala
+            .filter(_.getFileName.toString.endsWith(".class"))
+            .foreach { f =>
+              copy(f, outputDir.resolve(f.getFileName))
+            }
+        }
+      }
+    }
+  }
   def genReflectTestResourceClasses: Def.Initialize[Task[Unit]] = Def.task {
     val cp = classPath(Compile).value
     IO.withTemporaryDirectory { dir =>

@@ -26,21 +26,24 @@ public class ChildFirstClassLoader extends URLClassLoader {
   private final Map<String, Class<?>> loaded;
   private final Function<String, RequiredClassLoader> whichClassLoader;
   private final URL[] urls;
-  public static Function<String, RequiredClassLoader> UNSPECIFIED_LOADER = new Function<String, RequiredClassLoader>() {
-    @Override
-    public RequiredClassLoader apply(final String s) {
-      return RequiredClassLoader.UNSPECIFIED;
-    }
-  };
+  public static Function<String, RequiredClassLoader> UNSPECIFIED_LOADER =
+      new Function<String, RequiredClassLoader>() {
+        @Override
+        public RequiredClassLoader apply(final String s) {
+          return RequiredClassLoader.UNSPECIFIED;
+        }
+      };
 
   /**
    * Construct an instance of {@link ChildFirstClassLoader}.
+   *
    * @param urls the {@link java.net.URL}s to include in the class path of the ChildFirstClassLoader
    * @param whichClassLoader specifies which {@link java.lang.ClassLoader} to use for a particular
-   * class. If this function returns {@link RequiredClassLoader#FORCE_PARENT}, then the parent
-   * {@link java.lang.ClassLoader} will be used. Otherwise the URL ClassLoader will be tried first
-   * and will fall back to the parent loader.
-   * @param parent the parent class loader. This will usually be the system or application class loader.
+   *     class. If this function returns {@link RequiredClassLoader#FORCE_PARENT}, then the parent
+   *     {@link java.lang.ClassLoader} will be used. Otherwise the URL ClassLoader will be tried
+   *     first and will fall back to the parent loader.
+   * @param parent the parent class loader. This will usually be the system or application class
+   *     loader.
    * @param loaded the map of class name to previously loaded class instances
    */
   private ChildFirstClassLoader(
@@ -58,6 +61,7 @@ public class ChildFirstClassLoader extends URLClassLoader {
 
   /**
    * Construct an instance of {@link ChildFirstClassLoader}.
+   *
    * @param urls the {@link java.net.URL}s to include in the class path of the ChildFirstClassLoader
    */
   public ChildFirstClassLoader(final URL[] urls) {
@@ -65,12 +69,14 @@ public class ChildFirstClassLoader extends URLClassLoader {
   }
   /**
    * Construct an instance of {@link ChildFirstClassLoader}.
+   *
    * @param urls the {@link java.net.URL}s to include in the class path of the ChildFirstClassLoader
    * @param whichClassLoader specifies which {@link java.lang.ClassLoader} to use for a particular
-   * class. If this function returns {@link RequiredClassLoader#FORCE_PARENT}, then the parent
-   * {@link java.lang.ClassLoader} will be used. Otherwise the URL ClassLoader will be tried first
-   * and will fall back to the parent loader.
-   * @param parent the parent class loader. This will usually be the system or application class loader.
+   *     class. If this function returns {@link RequiredClassLoader#FORCE_PARENT}, then the parent
+   *     {@link java.lang.ClassLoader} will be used. Otherwise the URL ClassLoader will be tried
+   *     first and will fall back to the parent loader.
+   * @param parent the parent class loader. This will usually be the system or application class
+   *     loader.
    */
   public ChildFirstClassLoader(
       final URL[] urls,
@@ -104,12 +110,11 @@ public class ChildFirstClassLoader extends URLClassLoader {
    * classes.
    *
    * @param whichClassLoader the functioning determining which classloader to use to load a
-   * particular class
+   *     particular class
    * @return the new ChildFirstClassLoader with updated whichClassLoader function.
    */
   public ChildFirstClassLoader copy(final Function<String, RequiredClassLoader> whichClassLoader) {
-    return new ChildFirstClassLoader(
-        urls, whichClassLoader, getParent(), new HashMap<>(loaded));
+    return new ChildFirstClassLoader(urls, whichClassLoader, getParent(), new HashMap<>(loaded));
   }
 
   /**

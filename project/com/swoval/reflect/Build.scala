@@ -92,7 +92,8 @@ object Build {
         java8rt.value.map(rt => Seq("-bootclasspath", rt)).getOrElse(Seq.empty),
       doc / javacOptions := Nil,
       testFrameworks += new TestFramework("utest.runner.Framework"),
-      libraryDependencies += utest
+      libraryDependencies += utest,
+      genTestResourceClasses := Plugins.genCoreTestResourceClasses.value
     )
 
   lazy val scala = project
