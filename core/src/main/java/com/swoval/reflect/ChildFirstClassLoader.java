@@ -169,13 +169,13 @@ public class ChildFirstClassLoader extends URLClassLoader {
 
   /**
    * See
-   * [[https://docs.oracle.com/javase/9/docs/api/java/lang/instrument/Instrumentation.html#appendToSystemClassLoaderSearch-java.util.jar.JarFile-
-   * java.lang.instrument.Instrumentation#appendToSystemClassLoaderSearch]]
+   * <a href="https://docs.oracle.com/javase/9/docs/api/java/lang/instrument/Instrumentation.html#appendToSystemClassLoaderSearch-java.util.jar.JarFile-java.lang.instrument.Instrumentation#appendToSystemClassLoaderSearch">
+   *   https://docs.oracle.com/javase/9/docs/api/java/lang/instrument/Instrumentation.html</a>
    *
    * @param name the class name
    */
   @SuppressWarnings("unused")
-  public void appendToClassPathForInstrumentation(String name) {
+  public void appendToClassPathForInstrumentation(final String name) {
     try {
       super.addURL(Paths.get(name).toUri().toURL());
     } catch (MalformedURLException e) {
